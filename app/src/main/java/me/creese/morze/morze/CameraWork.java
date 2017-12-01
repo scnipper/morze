@@ -1,4 +1,4 @@
-package morze.creese.com.morze;
+package me.creese.morze.morze;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;

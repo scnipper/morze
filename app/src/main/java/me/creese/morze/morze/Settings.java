@@ -1,4 +1,4 @@
-package morze.creese.com.morze;
+package me.creese.morze.morze;
 
 /**
  * Created by yoba2 on 27.11.2017.

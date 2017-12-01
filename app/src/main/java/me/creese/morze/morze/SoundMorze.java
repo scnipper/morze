@@ -1,4 +1,4 @@
-package morze.creese.com.morze;
+package me.creese.morze.morze;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -7,7 +7,8 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
 
-import im.delight.android.audio.SoundManager;
+import me.creese.morze.R;
+
 
 /**
  * Created by yoba2 on 27.11.2017.
@@ -20,7 +21,6 @@ public class SoundMorze {
     private int line;
     private int loadSound;
     private boolean isLoad;
-    private SoundManager soundManager;
     private boolean isPlay;
     private int streamID;
 
@@ -44,11 +44,6 @@ public class SoundMorze {
             }
         }).start();
 
-        /*soundManager = new SoundManager(context,3);
-        soundManager.start();
-        soundManager.load(R.raw.dot);*/
-
-
     }
 
     public void stopDot() {
@@ -56,11 +51,7 @@ public class SoundMorze {
 
         mSoundPool.stop(streamID);
         isPlay = false;
-        try {
-            Thread.sleep(Settings.LENGTH_DOT);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+
 
     }
 

@@ -1,15 +1,19 @@
-package morze.creese.com.morze;
+package me.creese.morze.morze;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import me.creese.morze.activity.FlashingActivity;
 
 
 /**
  * Created by yoba2 on 27.11.2017.
  */
 
-public class Morze {
+public class Morze implements Serializable {
+    public static final String EXTRA = "Morze";
+
     private static final int DOT = 0x2e;
     private static final int LINE = 0x2d;
     private static final int SPACE = 0x20;
@@ -125,7 +129,6 @@ public class Morze {
         Thread thread = new Thread(() -> {
 
             for (Integer signal : signals) {
-                System.out.println(signal);
                 if (signal != 1) {
                     soundMorze.playDot();
                     //  if (signal == Settings.LENGTH_LINE) soundMorze.playLine();
@@ -139,7 +142,54 @@ public class Morze {
                     e.printStackTrace();
                 }
                 soundMorze.stopDot();
+                try {
+                    Thread.sleep(Settings.LENGTH_DOT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
+
+        });
+        thread.start();
+    }
+
+    public void run(FlashingActivity flashingActivity,DrawFlashView view) {
+        Thread thread = new Thread(() -> {
+
+            for (Integer signal : signals) {
+
+                if (signal != 1) {
+                    flashingActivity.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            view.drawFlash();
+                        }
+                    });
+
+                    //  if (signal == Settings.LENGTH_LINE) soundMorze.playLine();
+                }
+
+
+
+                try {
+                    Thread.sleep(signal);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                flashingActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.drawBlack();
+                    }
+                });
+
+                try {
+                    Thread.sleep(Settings.LENGTH_DOT);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            flashingActivity.finish();
 
         });
         thread.start();
