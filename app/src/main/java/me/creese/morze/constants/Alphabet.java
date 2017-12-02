@@ -1,4 +1,7 @@
-package me.creese.morze.morze;
+package me.creese.morze.constants;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by yoba2 on 27.11.2017.
@@ -6,10 +9,7 @@ package me.creese.morze.morze;
 
 public class Alphabet {
 
-    // cirilic alphabet
-    public static String А = ".-";
-    public static String Б = ".-";
-    public static String В = ".-";
+
 
 
     // ASCII codes
@@ -72,6 +72,41 @@ public class Alphabet {
     public static String Y = "-.--";
     public static String Z = "--..";
     public static String SPACE = " ";
+
+    // numbers
+
+    public static String _0 = "-----";
+    public static String _1 = ".----";
+    public static String _2 = "..---";
+    public static String _3 = "...--";
+    public static String _4 = "....-";
+    public static String _5 = ".....";
+    public static String _6 = "-....";
+    public static String _7 = "--...";
+    public static String _8 = "---..";
+    public static String _9 = "----.";
+
+    // special
+
+    public static String dot = "......";
+    public static String comma = ".-.-.-";
+    public static String colon = "---...";
+    public static String semicolon = "-.-.-.";
+    public static String bracket = "-.--.-";
+    public static String apostrophe = ".----.";
+    public static String quotes = ".-..-.";
+    public static String dash = "-....-";
+    public static String slash = "-..-.";
+    public static String question = "..--..";
+    public static String exclamation = "--..--";
+    public static String section = "-...-";
+    public static String error = "........";
+    public static String at = ".--.-.";
+    public static String end = "..-.-";
+
+
+    public static Map<Character, String> cirilic = new HashMap<Character, String>();
+
 
     public static String SOS = S+SPACE+O+SPACE+S;
 }

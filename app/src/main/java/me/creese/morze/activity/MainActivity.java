@@ -9,9 +9,11 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import me.creese.morze.R;
-import me.creese.morze.morze.CameraWork;
+import me.creese.morze.exception.NoFindCharacterException;
+import me.creese.morze.morze.CameraMorze;
 import me.creese.morze.morze.DrawFlashView;
 import me.creese.morze.morze.Morze;
 import me.creese.morze.morze.SoundMorze;
@@ -19,7 +21,7 @@ import me.creese.morze.morze.SoundMorze;
 
 public class MainActivity extends Activity {
 
-    private CameraWork cameraWork;
+    private CameraMorze cameraWork;
     private Morze morze;
     private SoundMorze soundMorze;
     private DrawFlashView flashView;
@@ -30,38 +32,50 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         //initCamera();
         TextView textToMorze = findViewById(R.id.textToMorze);
-
-        cameraWork = new CameraWork(this);
+        cameraWork = new CameraMorze(this);
         soundMorze = new SoundMorze(this);
-       // while (!soundMorze.isLoad()) {}
+        // while (!soundMorze.isLoad()) {}
         morze = new Morze(soundMorze);
         getPermissonCamera();
 
 
         Button startBtn = findViewById(R.id.flashOnBtn);
         startBtn.setOnClickListener(e -> {
-            //System.out.println(morze.parseToMorze("fuck"));
-            morze.parseString(morze.parseToMorze(textToMorze.getText().toString()));
+            if(textToMorze.getText().toString().isEmpty()) {
+                Toast.makeText(this,getText(R.string.emty_morze_field),Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            try {
+                morze.parseString(morze.parseToMorze(textToMorze.getText().toString()));
+            }
+            catch (NoFindCharacterException b) {
+                Toast.makeText(this,getText(R.string.fail_char),Toast.LENGTH_SHORT).show();
+                textToMorze.setText("");
+                return;
+            }
+
+
+            startFlashActivity();
             morze.run(soundMorze);
             morze.run(cameraWork);
-            startFlashActivity();
-
         });
 
     }
 
+
     private void startFlashActivity() {
-        Intent intent = new Intent(this,FlashingActivity.class);
-        intent.putExtra(Morze.EXTRA,morze);
+        Intent intent = new Intent(this, FlashingActivity.class);
+        intent.putExtra(Morze.EXTRA, morze);
         startActivity(intent);
     }
 
     @Override
-    public void finish() {
-        super.finish();
+    protected void onDestroy() {
+        super.onDestroy();
         cameraWork.cameraRelease();
+        soundMorze.release();
     }
-
 
     public void getPermissonCamera() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {

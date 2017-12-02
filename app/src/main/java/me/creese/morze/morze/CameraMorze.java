@@ -8,12 +8,12 @@ import android.hardware.Camera;
  * Created by yoba2 on 27.11.2017.
  */
 
-public class CameraWork {
+public class CameraMorze {
     private final Camera mCamera;
     private final Activity context;
     private Camera.Parameters mParams;
 
-    public CameraWork(Activity context) {
+    public CameraMorze(Activity context) {
         this.context = context;
         checkCameraHardware();
 

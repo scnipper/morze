@@ -1,4 +1,4 @@
-package me.creese.morze.morze;
+package me.creese.morze.constants;
 
 /**
  * Created by yoba2 on 27.11.2017.

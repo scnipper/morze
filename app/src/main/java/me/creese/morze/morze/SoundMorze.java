@@ -80,9 +80,9 @@ public class SoundMorze {
             }
         });
     }
-
-    public boolean isLoad() {
-        return isLoad;
+    public void release() {
+        mSoundPool.unload(dot);
+        mSoundPool.release();
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)

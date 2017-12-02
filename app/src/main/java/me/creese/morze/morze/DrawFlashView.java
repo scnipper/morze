@@ -27,6 +27,7 @@ public class DrawFlashView extends View {
 
 
 
+
     @Override
     protected void onDraw(Canvas canvas) {
         if(white)

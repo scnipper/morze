@@ -14,6 +14,7 @@ public class FlashingActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(0,0);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -22,9 +23,24 @@ public class FlashingActivity extends Activity {
         layout.screenBrightness = 1;
         getWindow().setAttributes(layout);
 
+
+
+    }
+
+    @Override
+    public void finish() {
+
+        super.finish();
+        overridePendingTransition(0,0);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         Morze morze = (Morze) getIntent().getSerializableExtra(Morze.EXTRA);
         morze.run(this,findViewById(R.id.flash));
 
     }
+
 }
 
