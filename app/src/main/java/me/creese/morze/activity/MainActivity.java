@@ -7,9 +7,15 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.widget.Button;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import me.creese.morze.R;
 import me.creese.morze.exception.NoFindCharacterException;
@@ -19,19 +25,52 @@ import me.creese.morze.morze.Morze;
 import me.creese.morze.morze.SoundMorze;
 
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements View.OnClickListener{
 
     private CameraMorze cameraWork;
     private Morze morze;
     private SoundMorze soundMorze;
     private DrawFlashView flashView;
+    private TextView notification;
+    private EditText textToMorze;
+    private ImageView touchIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //initCamera();
-        TextView textToMorze = findViewById(R.id.textToMorze);
+        textToMorze = findViewById(R.id.textToMorze);
+        ImageButton btnMorseScreen = findViewById(R.id.btn_get_morse_key);
+        notification = findViewById(R.id.notification);
+        notification.setVisibility(View.INVISIBLE);
+        touchIcon = findViewById(R.id.touch_icon);
+        Animation touchAnim = AnimationUtils.loadAnimation(this, R.anim.touch_icon_anim);
+        touchIcon.startAnimation(touchAnim);
+
+
+        final int maxLineLength = 10;
+
+
+        btnMorseScreen.setOnClickListener(this);
+        textToMorze.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                System.out.println(s+" "+start+" "+before+" "+count);
+                if(count == 15)
+                textToMorze.append("\n");
+            }
+        });
+
         cameraWork = new CameraMorze(this);
         soundMorze = new SoundMorze(this);
         // while (!soundMorze.isLoad()) {}
@@ -39,29 +78,36 @@ public class MainActivity extends Activity {
         getPermissonCamera();
 
 
-        Button startBtn = findViewById(R.id.flashOnBtn);
-        startBtn.setOnClickListener(e -> {
-            if(textToMorze.getText().toString().isEmpty()) {
-                Toast.makeText(this,getText(R.string.emty_morze_field),Toast.LENGTH_SHORT).show();
-                return;
-            }
 
-            try {
-                morze.parseString(morze.parseToMorze(textToMorze.getText().toString()));
-            }
-            catch (NoFindCharacterException b) {
-                Toast.makeText(this,getText(R.string.fail_char),Toast.LENGTH_SHORT).show();
-                textToMorze.setText("");
-                return;
-            }
-
-
-            startFlashActivity();
-            morze.run(soundMorze);
-            morze.run(cameraWork);
-        });
+        ImageButton startBtn = findViewById(R.id.flashOnBtn);
+        startBtn.setOnClickListener(this);
 
     }
+    private void showNotification(CharSequence text) {
+
+        notification.setText(text);
+        notification.setVisibility(View.INVISIBLE);
+
+        Animation upAnimation = AnimationUtils.loadAnimation(this, R.anim.show_notification);
+        upAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                notification.setVisibility(View.VISIBLE);
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                notification.setVisibility(View.INVISIBLE);
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        notification.startAnimation(upAnimation);
+    }
+
 
 
     private void startFlashActivity() {
@@ -109,4 +155,32 @@ public class MainActivity extends Activity {
     }
 
 
+    @Override
+    public void onClick(View v) {
+        if(v.getId() == R.id.btn_get_morse_key) {
+
+
+
+        }
+        if(v.getId() == R.id.flashOnBtn) {
+            if(textToMorze.getText().toString().isEmpty()) {
+                showNotification(getText(R.string.emty_morze_field));
+                return;
+            }
+
+            try {
+                morze.parseString(morze.parseToMorze(textToMorze.getText().toString()));
+            }
+            catch (NoFindCharacterException b) {
+                showNotification(getText(R.string.fail_char));
+                textToMorze.setText("");
+                return;
+            }
+
+
+            startFlashActivity();
+            morze.run(soundMorze);
+            morze.run(cameraWork);
+        }
+    }
 }

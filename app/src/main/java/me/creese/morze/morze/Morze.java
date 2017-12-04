@@ -183,7 +183,7 @@ public class Morze implements Serializable {
         Thread thread = new Thread(() -> {
 
             for (Integer signal : signals) {
-
+                System.out.println(signal);
                 if (signal != 1) {
                     cameraWork.turnOnFlash();
 

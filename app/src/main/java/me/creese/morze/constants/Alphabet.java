@@ -40,7 +40,7 @@ public class Alphabet {
     public static byte X_CODE = 0x58;
     public static byte Y_CODE = 0x59;
     public static byte Z_CODE = 0x5A;
-    public static byte SPACE_WORD = 0x4;
+    public static byte SPACE_WORD = 0x5;
 
 
     // latin alphabet
