@@ -15,8 +15,9 @@ import me.creese.morze.R;
  */
 
 public class SoundMorze {
-    private final Context context;
-    private SoundPool mSoundPool;
+
+    private  final Context context;
+    private  SoundPool mSoundPool;
     private int dot;
     private int line;
     private int loadSound;

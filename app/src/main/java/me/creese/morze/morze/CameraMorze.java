@@ -64,6 +64,7 @@ public class CameraMorze {
             c = Camera.open(0); // attempt to get a Camera instance
         } catch (Exception e) {
             e.printStackTrace();
+            //System.out.println("lol");
         }
         /*for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
             Camera.getCameraInfo(i, info);

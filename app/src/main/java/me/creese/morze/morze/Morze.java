@@ -8,6 +8,7 @@ import me.creese.morze.activity.FlashingActivity;
 import me.creese.morze.constants.Alphabet;
 import me.creese.morze.constants.Settings;
 import me.creese.morze.exception.NoFindCharacterException;
+import me.creese.morze.views.DrawFlashView;
 
 import static me.creese.morze.constants.Alphabet.cirilic;
 
@@ -30,6 +31,10 @@ public class Morze implements Serializable {
         signals = new ArrayList<Integer>();
         generateHashMap();
         initCirilicAlphbet();
+    }
+
+    public HashMap<Character, String> getHashMap() {
+        return hashMap;
     }
 
     private void initCirilicAlphbet() {

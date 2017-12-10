@@ -1,4 +1,4 @@
-package me.creese.morze.morze;
+package me.creese.morze.views;
 
 import android.content.Context;
 import android.graphics.Canvas;
