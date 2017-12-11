@@ -3,8 +3,10 @@ package me.creese.morze.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -20,11 +22,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import me.creese.morze.R;
+import me.creese.morze.constants.Settings;
 import me.creese.morze.exception.NoFindCharacterException;
 import me.creese.morze.morze.CameraMorze;
-import me.creese.morze.views.DrawFlashView;
 import me.creese.morze.morze.Morze;
 import me.creese.morze.morze.SoundMorze;
+import me.creese.morze.views.DrawFlashView;
 
 
 public class MainActivity extends Activity implements View.OnClickListener{
@@ -46,8 +49,10 @@ public class MainActivity extends Activity implements View.OnClickListener{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         //initCamera();
+        initSetings();
 
         initAnim();
         textToMorze = findViewById(R.id.textToMorze);
@@ -65,6 +70,8 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
 
 
+        ImageButton settingsBtn = findViewById(R.id.settings_btn);
+        settingsBtn.setOnClickListener(this);
 
 
         final int maxLineLength = 10;
@@ -89,9 +96,7 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
         });
 
-        //cameraWork = new CameraMorze(this);
         soundMorze = new SoundMorze(this);
-        // while (!soundMorze.isLoad()) {}
         morze = new Morze(soundMorze);
         getPermissonCamera();
 
@@ -100,6 +105,15 @@ public class MainActivity extends Activity implements View.OnClickListener{
         startBtn = findViewById(R.id.flashOnBtn);
         startBtn.setOnClickListener(this);
 
+    }
+
+    private void initSetings() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Settings.LENGTH = prefs.getInt("seekBar",100);
+        Settings.IS_FLASHING_CAMERA = prefs.getBoolean("flash",true);
+        Settings.IS_FLASHING_SCREEN = prefs.getBoolean("screen",false);
+        Settings.IS_PLAY_SOUND = prefs.getBoolean("sound",false);
+        Settings.print();
     }
 
     private void initAnim() {
@@ -212,37 +226,6 @@ public class MainActivity extends Activity implements View.OnClickListener{
     public void onClick(View v) {
         if(v.getId() == R.id.btn_get_morse_key) {
 
-          /*  Point dim = new Point();
-
-            float density = getResources().getDisplayMetrics().density;
-            getWindowManager().getDefaultDisplay().getSize(dim);
-
-            float xD = ((float)dim.x/100)*density;
-            float yD = ((float)dim.y/100)*density;
-
-            logo.startAnimation(goneLogo);
-           // relative.startAnimation(goneLogo);
-            touchIcon.clearAnimation();
-            touchIcon.setVisibility(View.GONE);
-            startBtn.startAnimation(gonFlashBtn);
-
-*//*
-            relative.animate().setDuration(500);
-            relative.animate().y(yD*2f);
-            relative.animate().start();
-
-    *//**//*        startBtn.animate().setDuration(400);
-            startBtn.animate().x(dim.x);
-
-           // startBtn.animate().y(yD*90);
-            startBtn.animate().start();*//**//*
-
-
-            PropertyValuesHolder pvhX = PropertyValuesHolder.ofFloat("xFraction",  0.8f);
-            PropertyValuesHolder pvhY = PropertyValuesHolder.ofFloat("yFraction",  0.9f);
-            ObjectAnimator animator = ObjectAnimator.ofPropertyValuesHolder(startBtn, pvhX, pvhY);
-            animator.setDuration(400);
-            animator.start();*/
 
 
             startKeyActivity();
@@ -264,9 +247,13 @@ public class MainActivity extends Activity implements View.OnClickListener{
             }
 
 
-            startFlashActivity();
-            morze.run(soundMorze);
-            morze.run(cameraWork);
+            if(Settings.IS_FLASHING_SCREEN) startFlashActivity();
+            if(Settings.IS_PLAY_SOUND) morze.run(soundMorze);
+            if(Settings.IS_FLASHING_CAMERA) morze.run(cameraWork);
+        }
+        if(v.getId() == R.id.settings_btn) {
+            startActivity(new Intent(this,SettingsActivity.class));
+
         }
     }
 }

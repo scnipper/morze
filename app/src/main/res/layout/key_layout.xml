@@ -78,8 +78,8 @@
 
     <me.creese.morze.views.SymbolWait
         android:id="@+id/symbol_wait"
-        android:layout_width="139dp"
-        android:layout_height="172dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
@@ -89,7 +89,7 @@
         app:layout_constraintHorizontal_bias="0.91"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/relativeLayout"
-        app:layout_constraintVertical_bias="0.100000024" />
+        app:layout_constraintVertical_bias="0.19" />
 
 
 </android.support.constraint.ConstraintLayout>

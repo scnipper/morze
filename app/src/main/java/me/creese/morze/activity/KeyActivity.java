@@ -66,7 +66,7 @@ public class KeyActivity extends Activity implements View.OnTouchListener {
         morze = (Morze) getIntent().getSerializableExtra(Morze.EXTRA);
         reverse(morze.getHashMap());
         timer = new ETimer();
-        timer.setDelay(Settings.LENGTH_DOT*10);
+        timer.setDelay(Settings.LENGTH*10);
         timer.setShedule(new Runnable() {
             @Override
             public void run() {
@@ -94,7 +94,7 @@ public class KeyActivity extends Activity implements View.OnTouchListener {
         } else if (event.getAction() == MotionEvent.ACTION_UP) {
             soundMorze.stopDot();
             //System.out.println(System.currentTimeMillis() - timeDown);
-            if (System.currentTimeMillis() - timeDown <= Settings.LENGTH_DOT) {
+            if (System.currentTimeMillis() - timeDown <= Settings.LENGTH) {
                 stringMorze.append(".");
             } else {
                 stringMorze.append("-");
@@ -102,7 +102,7 @@ public class KeyActivity extends Activity implements View.OnTouchListener {
             System.out.println(reverseMap.get(stringMorze.toString()));
             timer.startTimer();
             symbolWait.setVisibility(View.VISIBLE);
-            symbolWait.setSymbol(reverseMap.get(stringMorze.toString()),Settings.LENGTH_DOT*10);
+            symbolWait.setSymbol(reverseMap.get(stringMorze.toString()),Settings.LENGTH*10);
 
 
 

@@ -137,8 +137,8 @@ public class Morze implements Serializable {
         //parseT0Morze(stringMorze);
         signals.clear();
         for (byte b : stringMorze.getBytes()) {
-            if (b == DOT) signals.add(Settings.LENGTH_DOT);
-            if (b == LINE) signals.add(Settings.LENGTH_LINE);
+            if (b == DOT) signals.add(Settings.LENGTH);
+            if (b == LINE) signals.add(Settings.LENGTH*3);
             if (b == SPACE) {
                 signals.add(1);
                 signals.add(1);
@@ -203,7 +203,7 @@ public class Morze implements Serializable {
 
                 try {
                     // if(cameraWork.isFlashOn())
-                    Thread.sleep(Settings.LENGTH_DOT);
+                    Thread.sleep(Settings.LENGTH);
                     //else Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
@@ -229,7 +229,7 @@ public class Morze implements Serializable {
                 }
                 soundMorze.stopDot();
                 try {
-                    Thread.sleep(Settings.LENGTH_DOT);
+                    Thread.sleep(Settings.LENGTH);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -264,7 +264,7 @@ public class Morze implements Serializable {
                     }
                 });
                 try {
-                    Thread.sleep(Settings.LENGTH_DOT);
+                    Thread.sleep(Settings.LENGTH);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
