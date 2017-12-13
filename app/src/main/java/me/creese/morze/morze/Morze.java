@@ -26,7 +26,7 @@ public class Morze implements Serializable {
     private final ArrayList<Integer> signals;
     private HashMap<Character, String> hashMap;
 
-    public Morze(SoundMorze soundMorze) {
+    public Morze() {
 
         signals = new ArrayList<Integer>();
         generateHashMap();

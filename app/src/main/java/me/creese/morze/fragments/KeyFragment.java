@@ -1,11 +1,14 @@
-package me.creese.morze.activity;
+package me.creese.morze.fragments;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
@@ -14,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.creese.morze.R;
+import me.creese.morze.activity.MainActivity;
 import me.creese.morze.constants.Settings;
 import me.creese.morze.morze.Morze;
 import me.creese.morze.morze.SoundMorze;
@@ -24,7 +28,7 @@ import me.creese.morze.views.SymbolWait;
  * Created by yoba2 on 08.12.2017.
  */
 
-public class KeyActivity extends Activity implements View.OnTouchListener {
+public class KeyFragment extends Fragment implements View.OnTouchListener {
     private SoundMorze soundMorze;
     private long timeDown;
     private ArrayList<Long> deltaArray;
@@ -39,29 +43,53 @@ public class KeyActivity extends Activity implements View.OnTouchListener {
     private Object mapInversed;
     private HashMap<String, Character> reverseMap;
     private SymbolWait symbolWait;
+    private Context context;
+    private MainActivity startActivity;
+    private Character symbol;
 
 
-    @SuppressLint("ClickableViewAccessibility")
+    @Nullable
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.key_layout);
-        Button keyButton = findViewById(R.id.keyButton);
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.key_layout, container, false);
+        context = view.getContext();
+        Button keyButton = view.findViewById(R.id.keyButton);
         //keyButton.setOnClickListener(this);
         keyButton.setOnTouchListener(this);
         deltaArray = new ArrayList<>();
-        soundMorze = new SoundMorze(this);
-        textField = findViewById(R.id.textToMorze);
+        textField = view.findViewById(R.id.textToMorze);
         stringMorze = new StringBuilder();
-        symbolWait = findViewById(R.id.symbol_wait);
+        symbolWait = view.findViewById(R.id.symbol_wait);
         symbolWait.setVisibility(View.INVISIBLE);
 
 
+        reverse(morze.getHashMap());
+        timer = new ETimer();
+        timer.setDelay(Settings.LENGTH*10);
+        timer.setShedule(new Runnable() {
+            @Override
+            public void run() {
+                startActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        if (symbol != null) {
+                            textField.append(symbol+"");
+                        }
+
+                        symbolWait.setVisibility(View.INVISIBLE);
+                        stringMorze = new StringBuilder();
+                    }
+                });
+            }
+        });
+
+        return view;
     }
 
-
+    /*
     @Override
-    protected void onStart() {
+    public void onStart() {
         super.onStart();
         morze = (Morze) getIntent().getSerializableExtra(Morze.EXTRA);
         reverse(morze.getHashMap());
@@ -83,7 +111,7 @@ public class KeyActivity extends Activity implements View.OnTouchListener {
                 });
             }
         });
-    }
+    }*/
 
     @SuppressLint("ClickableViewAccessibility")
     @Override
@@ -99,10 +127,15 @@ public class KeyActivity extends Activity implements View.OnTouchListener {
             } else {
                 stringMorze.append("-");
             }
-            System.out.println(reverseMap.get(stringMorze.toString()));
-            timer.startTimer();
-            symbolWait.setVisibility(View.VISIBLE);
-            symbolWait.setSymbol(reverseMap.get(stringMorze.toString()),Settings.LENGTH*10);
+            Character tmp = reverseMap.get(stringMorze.toString());
+
+            if (tmp != null) {
+                symbol = tmp;
+                timer.startTimer();
+                symbolWait.setVisibility(View.VISIBLE);
+                symbolWait.setSymbol(reverseMap.get(stringMorze.toString()),Settings.LENGTH*10);
+            }
+
 
 
 
@@ -116,6 +149,20 @@ public class KeyActivity extends Activity implements View.OnTouchListener {
         reverseMap = new HashMap<>();
         for(Map.Entry<Character,String> entry : map.entrySet())
             reverseMap.put(entry.getValue(), entry.getKey());
+    }
+
+    public void setMorze(Morze morze) {
+        this.morze = morze;
+
+    }
+
+
+    public void setSoundMorze(SoundMorze soundMorze) {
+        this.soundMorze = soundMorze;
+    }
+
+    public void setStartActivity(MainActivity startActivity) {
+        this.startActivity = startActivity;
     }
 }
 

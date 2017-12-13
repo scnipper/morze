@@ -1,193 +1,142 @@
 package me.creese.morze.activity;
 
 import android.Manifest;
-import android.app.Activity;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.content.ContextCompat;
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.creese.morze.R;
-import me.creese.morze.constants.Settings;
-import me.creese.morze.exception.NoFindCharacterException;
+import me.creese.morze.fragments.KeyFragment;
+import me.creese.morze.fragments.MainFragment;
 import me.creese.morze.morze.CameraMorze;
 import me.creese.morze.morze.Morze;
 import me.creese.morze.morze.SoundMorze;
-import me.creese.morze.views.DrawFlashView;
+import me.creese.morze.util.ResizeWidthAnimation;
 
+public class MainActivity extends FragmentActivity {
 
-public class MainActivity extends Activity implements View.OnClickListener{
+    /** идентификатор первого фрагмента. */
+    public static final int FRAGMENT_ONE = 0;
 
-    private CameraMorze cameraWork;
-    private Morze morze;
+    /** идентификатор второго. */
+    public static final int FRAGMENT_TWO = 1;
+    public static final int FRAGMENTS = 2;
+    /** адаптер фрагментов. */
+    private FragmentPagerAdapter _fragmentPagerAdapter;
+    /** список фрагментов для отображения. */
+    private final List<Fragment> _fragments = new ArrayList<Fragment>();
+    /** сам ViewPager который будет все это отображать. */
+    private ViewPager _viewPager;
     private SoundMorze soundMorze;
-    private DrawFlashView flashView;
-    private TextView notification;
-    private EditText textToMorze;
-    private ImageView touchIcon;
-    private ImageView logo;
-    private RelativeLayout relative;
-    private Animation goneLogo;
-    private Animation gonFlashBtn;
-    private ImageButton startBtn;
-    private Animation touchAnim;
+    private Morze morze;
+    private CameraMorze camerMorze;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-
-        setContentView(R.layout.activity_main);
-        //initCamera();
-        initSetings();
-
-        initAnim();
-        textToMorze = findViewById(R.id.textToMorze);
-        ImageButton btnMorseScreen = findViewById(R.id.btn_get_morse_key);
-        notification = findViewById(R.id.notification);
-        notification.setVisibility(View.INVISIBLE);
-        touchIcon = findViewById(R.id.touch_icon);
-
-        touchIcon.startAnimation(touchAnim);
-        showNotification("Напиши текст который хочешь воспроизвести");
-
-
-        logo = findViewById(R.id.logo);
-        relative = findViewById(R.id.relativeLayout);
-
-
-
-        ImageButton settingsBtn = findViewById(R.id.settings_btn);
-        settingsBtn.setOnClickListener(this);
-
-
-        final int maxLineLength = 10;
-
-
-        btnMorseScreen.setOnClickListener(this);
-        textToMorze.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                System.out.println(s+" "+start+" "+before+" "+count);
-                if(count == 15)
-                textToMorze.append("\n");
-            }
-        });
+        setContentView(R.layout.main_tabhost_activity);
 
         soundMorze = new SoundMorze(this);
-        morze = new Morze(soundMorze);
+        morze = new Morze();
+        camerMorze = new CameraMorze(this);
         getPermissonCamera();
 
+        MainFragment m = new MainFragment();
+        m.setMorze(morze);
+        m.setSoundMorze(soundMorze);
+        m.setStartActivity(this);
+        m.setCameraMorze(camerMorze);
+
+        KeyFragment k = new KeyFragment();
+        k.setMorze(morze);
+        k.setSoundMorze(soundMorze);
+        k.setStartActivity(this);
 
 
-        startBtn = findViewById(R.id.flashOnBtn);
-        startBtn.setOnClickListener(this);
 
-    }
+        _fragments.add(FRAGMENT_ONE, m);
+        _fragments.add(FRAGMENT_TWO, k);
+        _fragmentPagerAdapter = new FragmentPagerAdapter(getSupportFragmentManager()) {
 
-    private void initSetings() {
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Settings.LENGTH = prefs.getInt("seekBar",100);
-        Settings.IS_FLASHING_CAMERA = prefs.getBoolean("flash",true);
-        Settings.IS_FLASHING_SCREEN = prefs.getBoolean("screen",false);
-        Settings.IS_PLAY_SOUND = prefs.getBoolean("sound",false);
-        Settings.print();
-    }
-
-    private void initAnim() {
-        touchAnim = AnimationUtils.loadAnimation(this, R.anim.touch_icon_anim);
-        goneLogo = AnimationUtils.loadAnimation(this,R.anim.gone_logo);
-        goneLogo.setFillAfter(true);
-        gonFlashBtn = AnimationUtils.loadAnimation(this,R.anim.gone_flash_btn);
-        gonFlashBtn.setFillAfter(true);
-        gonFlashBtn.setAnimationListener(new Animation.AnimationListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
+            public int getCount() {
 
+                return FRAGMENTS;
             }
 
             @Override
-            public void onAnimationEnd(Animation animation) {
+            public Fragment getItem(final int position) {
 
-                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) startBtn.getLayoutParams();
-                // change the coordinates of the view object itself so that on click listener reacts to new position
-               // startBtn.layout(((int) (startBtn.getLeft() + startBtn.getWidth() * 1.3f)), ((int) (startBtn.getTop() + startBtn.getHeight() * 2.1f)), startBtn.getRight(), startBtn.getBottom());
-            /*    startBtn.setX(startBtn.getWidth()*1.3f);
-                startBtn.setY(startBtn.getHeight()*2.1f);*/
+                return _fragments.get(position);
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
+            public CharSequence getPageTitle(final int position) {
 
+                switch (position) {
+                    case FRAGMENT_ONE:
+                        return "Title One";
+                    case FRAGMENT_TWO:
+                        return "Title Two";
+                    default:
+                        return null;
+                }
             }
-        });
-    }
-
-    private void showNotification(CharSequence text) {
-
-        notification.setText(text);
-        notification.setVisibility(View.INVISIBLE);
-
-        Animation upAnimation = AnimationUtils.loadAnimation(this, R.anim.show_notification);
-        upAnimation.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-                notification.setVisibility(View.VISIBLE);
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                notification.setVisibility(View.INVISIBLE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        notification.startAnimation(upAnimation);
-    }
-
-
-    private void startKeyActivity() {
-        Intent intent = new Intent(this, KeyActivity.class);
-        intent.putExtra(Morze.EXTRA,morze);
-        startActivity(intent);
-    }
-
-    private void startFlashActivity() {
-        Intent intent = new Intent(this, FlashingActivity.class);
-        intent.putExtra(Morze.EXTRA, morze);
-        startActivity(intent);
+        };
+        _viewPager = findViewById(R.id.pager);
+        _viewPager.setAdapter(_fragmentPagerAdapter);
+        _viewPager.setCurrentItem(0);
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        cameraWork.cameraRelease();
-        soundMorze.release();
+    protected void onStart() {
+        super.onStart();
+
+    }
+
+    private void checkToShowHelpAnim() {
+        View blackScreenHelp = findViewById(R.id.black_help_screen);
+        blackScreenHelp.setVisibility(View.VISIBLE);
+        ResizeWidthAnimation anim = new ResizeWidthAnimation(blackScreenHelp, 800);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                blackScreenHelp.animate().alpha(0).setDuration(500).start();
+                blackScreenHelp.animate().setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        blackScreenHelp.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+
+            }
+        });
+        anim.setDuration(500);
+        blackScreenHelp.startAnimation(anim);
     }
 
     public void getPermissonCamera() {
@@ -221,39 +170,38 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
     }
 
-
     @Override
-    public void onClick(View v) {
-        if(v.getId() == R.id.btn_get_morse_key) {
+    public void onDestroy() {
+        super.onDestroy();
+        camerMorze.cameraRelease();
+        soundMorze.release();
+    }
 
 
 
-            startKeyActivity();
+    public void showNotification(CharSequence text, TextView notification) {
 
-        }
-        if(v.getId() == R.id.flashOnBtn) {
-            if(textToMorze.getText().toString().isEmpty()) {
-                showNotification(getText(R.string.emty_morze_field));
-                return;
+        notification.setText(text);
+        notification.setVisibility(View.INVISIBLE);
+
+        Animation upAnimation = AnimationUtils.loadAnimation(this, R.anim.show_notification);
+        upAnimation.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+                notification.setVisibility(View.VISIBLE);
             }
 
-            try {
-                morze.parseString(morze.parseToMorze(textToMorze.getText().toString()));
-            }
-            catch (NoFindCharacterException b) {
-                showNotification(getText(R.string.fail_char));
-                textToMorze.setText("");
-                return;
+            @Override
+            public void onAnimationEnd(Animation animation) {
+                notification.setVisibility(View.INVISIBLE);
+                checkToShowHelpAnim();
             }
 
+            @Override
+            public void onAnimationRepeat(Animation animation) {
 
-            if(Settings.IS_FLASHING_SCREEN) startFlashActivity();
-            if(Settings.IS_PLAY_SOUND) morze.run(soundMorze);
-            if(Settings.IS_FLASHING_CAMERA) morze.run(cameraWork);
-        }
-        if(v.getId() == R.id.settings_btn) {
-            startActivity(new Intent(this,SettingsActivity.class));
-
-        }
+            }
+        });
+        notification.startAnimation(upAnimation);
     }
 }

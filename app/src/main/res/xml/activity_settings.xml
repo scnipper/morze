@@ -30,11 +30,11 @@
             app:stepValue="50" />
 
     <Preference
-        android:key="screen"
+        android:key="rate"
         android:summary="Оцените приложение"
         android:title="Оценить" />
     <Preference
-        android:key="screen"
+        android:key="about"
         android:summary="Игры и прложения от creese"
         android:title="Еще приложения" />
 

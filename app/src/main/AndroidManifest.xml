@@ -28,14 +28,15 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_flashing"
             android:theme="@style/FlashTheme" />
-        <activity
+       <!-- <activity
             android:name=".activity.KeyActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_flashing"
-            android:screenOrientation="portrait" />
-        <activity android:name=".activity.SettingsActivity"
+            android:screenOrientation="portrait" />-->
+        <activity
+            android:name=".activity.SettingsActivity"
             android:label="Settings"
-            android:theme="@style/SettingsTheme"></activity>
+            android:theme="@style/SettingsTheme" />
     </application>
 
 </manifest>
